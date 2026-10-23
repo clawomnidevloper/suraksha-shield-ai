@@ -1,0 +1,6 @@
+{
+  "name": "Suraksha Shield",
+  "description": "Real-time global anti-fraud guardian protecting users with 12 verification tools, cloud threat intelligence sync, multi-country legal jurisdictions, and interactive scam defense drills.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
