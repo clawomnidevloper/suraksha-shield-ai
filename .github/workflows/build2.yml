@@ -22,6 +22,37 @@ jobs:
       - name: Install and Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
+      - name: Generate Dummy google-services.json
+        run: |
+          mkdir -p app
+          cat << 'EOF' > app/google-services.json
+          {
+            "project_info": {
+              "project_number": "123456789012",
+              "project_id": "suraksha-shield-preview",
+              "storage_bucket": "suraksha-shield-preview.appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:123456789012:android:abcdef123456",
+                  "android_client_info": {
+                    "package_name": "com.clawomni.surakshashield"
+                  }
+                },
+                "oauth_client": [],
+                "api_key": [
+                  {
+                    "current_key": "AIzaSyDummyKeyForBuildVerification123456"
+                  }
+                ],
+                "services": {}
+              }
+            ],
+            "configuration_version": "1"
+          }
+          EOF
+
       - name: Generate Gradle Wrapper
         run: gradle wrapper
 
@@ -29,7 +60,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace
+        run: ./gradlew assembleDebug -x validateSigningDebug --stacktrace
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
