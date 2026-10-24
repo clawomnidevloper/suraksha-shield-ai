@@ -19,10 +19,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Create google-services.json
+      - name: Create Dummy google-services.json
         run: |
           mkdir -p app
           cat << 'EOF' > app/google-services.json
@@ -53,14 +50,16 @@ jobs:
           }
           EOF
 
-      - name: Build Debug APK with System Gradle
+      - name: Accept Android Licenses & Build APK
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y gradle
-          gradle assembleDebug --no-daemon -x lint -x test -x validateSigningDebug --stacktrace
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          chmod +x gradlew || true
+          ./gradlew assembleDebug -x lint -x test -x validateSigningDebug --stacktrace
 
-      - name: Find and Upload APK
+      - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: SurakshaShield-Release-APK
-          path: "**/build/outputs/apk/**/*.apk"
+          path: "app/build/outputs/apk/debug/*.apk"
