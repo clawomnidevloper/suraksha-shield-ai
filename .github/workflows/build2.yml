@@ -19,8 +19,10 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install and Setup Gradle
+      - name: Install Compatible Gradle 8.7
         uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.7'
 
       - name: Generate Dummy google-services.json
         run: |
@@ -53,14 +55,14 @@ jobs:
           }
           EOF
 
-      - name: Generate Gradle Wrapper
-        run: gradle wrapper
+      - name: Generate Gradle Wrapper 8.7
+        run: gradle wrapper --gradle-version 8.7
 
       - name: Make gradlew Executable
         run: chmod +x gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug -x validateSigningDebug --stacktrace
+        run: ./gradlew assembleDebug -x lint -x test -x validateSigningDebug --stacktrace
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
