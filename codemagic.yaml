@@ -1,43 +1,47 @@
 workflows:
-  android-debug:
-    name: Build Suraksha Shield APK
-    max_build_duration: 30
-    instance_type: mac_mini_m1
-    environment:
-      java: 17
-    scripts:
-      - name: Create google-services.json
-        script: |
-          mkdir -p app
-          cat << 'EOF' > app/google-services.json
-          {
-            "project_info": {
-              "project_number": "123456789012",
-              "project_id": "suraksha-shield-preview",
-              "storage_bucket": "suraksha-shield-preview.appspot.com"
-            },
-            "client": [
-              {
-                "client_info": {
-                  "mobilesdk_app_id": "1:123456789012:android:abcdef123456",
-                  "android_client_info": {
-                    "package_name": "com.clawomni.surakshashield"
-                  }
-                },
-                "oauth_client": [],
-                "api_key": [
-                  {
-                    "current_key": "AIzaSyDummyKeyForBuildVerification123456"
-                  }
-                ],
-                "services": {}
-              }
-            ],
-            "configuration_version": "1"
-          }
-          EOF
-      - name: Build Android APK
-        script: |
-          gradle assembleDebug -x lint -x test
-    artifacts:
-      - app/build/outputs/**/*.apk
+android-debug:
+name: Build Suraksha Shield APK
+max_build_duration: 30
+instance_type: mac_mini_m1
+environment:
+java: 17
+scripts:
+- name: Create google-services.json
+script: |
+mkdir -p app
+cat << 'EOF' > app/google-services.json
+{
+"project_info": {
+"project_number": "123456789012",
+"project_id": "suraksha-shield-preview",
+"storage_bucket": "suraksha-shield-preview.appspot.com"
+},
+"client": [
+{
+"client_info": {
+"mobilesdk_app_id": "1:123456789012:android:abcdef123456",
+"android_client_info": {
+"package_name": "com.clawomni.surakshashield"
+}
+},
+"oauth_client": [],
+"api_key": [
+{
+"current_key": "AIzaSyDummyKeyForBuildVerification123456"
+}
+],
+"services": {}
+}
+],
+"configuration_version": "1"
+}
+EOF
+​- name: Setup Gradle 9.3.1 Wrapper
+script: |
+gradle wrapper --gradle-version 9.3.1 --distribution-type bin
+chmod +x gradlew
+​- name: Build Android APK
+script: |
+./gradlew assembleDebug -x lint -x test -x validateSigningDebug --stacktrace
+​artifacts:
+- app/build/outputs//*.apk
