@@ -19,12 +19,10 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install Compatible Gradle 8.7
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: '8.7'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
-      - name: Generate Dummy google-services.json
+      - name: Create google-services.json
         run: |
           mkdir -p app
           cat << 'EOF' > app/google-services.json
@@ -55,17 +53,14 @@ jobs:
           }
           EOF
 
-      - name: Generate Gradle Wrapper 8.7
-        run: gradle wrapper --gradle-version 8.7
+      - name: Build Debug APK with System Gradle
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y gradle
+          gradle assembleDebug --no-daemon -x lint -x test -x validateSigningDebug --stacktrace
 
-      - name: Make gradlew Executable
-        run: chmod +x gradlew
-
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug -x lint -x test -x validateSigningDebug --stacktrace
-
-      - name: Upload APK Artifact
+      - name: Find and Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: SurakshaShield-Release-APK
-          path: app/build/outputs/apk/debug/*.apk
+          path: "**/build/outputs/apk/**/*.apk"
